@@ -1,20 +1,27 @@
 import math
 
-V0 = 1
-EPS = 1e-3
+PI = math.pi
+V0 = 1.0
+EPS = 1e-6
 
-# X[0] -> r, X[1] -> h, X[2] -> lambda
-
-def lagrengien(X):
-    return (math.pi * X[0]**2 + (X[0]**2 + X[1]**2)) - ((math.pi * X[0]**2 * X[1])/3.0) - V0
+def lagrangien(X):
+    # Formule: L(X) = pi^2 r^2 (r^2 + h^2) - lam * (pi/3 r^2 h - V0)
+    #                 |--------f---------|      |-------c-------|
+    r, h, lam = X
+    f = PI**2 * r**2 * (r**2 + h**2)
+    c = PI * r**2 * h / 3.0 - V0 
+    return f - lam * c
+    
 
 def gradient(X):
-    G = [0] * 3
-    G[0] = 4.0 * math.pi**2 * X[0]**3 + 2.0 * math.pi**2 * X[0] * X[1]**2 - (2.0 * X[2] * math.pi * X[0] * X[1]) / 3.0
-    G[1] = X[0]**2 * (2.0 * math.pi**2 * X[1] - (X[2] * math.pi) / 3.0)
-    G[2] = -1.0 * ((math.pi * X[0]**2 * X[1])/3 - V0)
-    return G
+    # Calcule les dérivées partielles de L par rapport à r, h et lambda puis renvoyer le gradient
+    # c.f. rapport pour les formules
+    r, h, lam = X 
+    dL_dr = 4.0 * PI**2 * r**3 + 2.0 * PI**2 * r * h**2 - 2.0 * PI * lam * r * h / 3.0
+    dL_dh = r**2 * (2.0 * PI**2 * h - PI * lam / 3.0)
+    dL_dlam = -(PI * r**2 * h / 3.0 - V0)
+    return [dL_dr, dL_dh, dL_dlam]
 
 X = [1.0, 2.0, 3.0]
-print(lagrengien(X))
+print(lagrangien(X))
 print(gradient(X))
