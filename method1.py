@@ -1,18 +1,21 @@
 import problem as p
+import numpy as np
 
-def methode1(Xo):
-    Xk = Xo 
+# Méthode 1 : Gradient à pas fixe 
+
+def methode1(X0, alpha):
+    Xk = np.array(X0, dtype=float) 
     norm = 1.0
-    dk = [0]*3
-    Xkp1 = [0]*3
+    k = 0
 
-    while (norm > p.EPS):
-        dk = p.gradient(Xk)
-        norm = 0.0
-        for n in range(3):
-            Xkp1[n] = Xk[n] - dk[n]
-            norm += dk[n]**2
+    while norm > p.EPS and k < p.KMAX:
+        dk = -p.gradient(Xk)
+        Xkp1 = Xk + alpha * dk
+        norm = np.linalg.norm(dk)
+        Xk = Xkp1
+        k += 1
     
-    return Xkp1
+    return Xk, k
 
-print(methode1([1,1,1]))
+if __name__ == "__main__":
+    print(methode1([1,1,1], 0.01))
