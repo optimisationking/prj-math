@@ -1,5 +1,6 @@
 import problem as p
 import numpy as np
+import time
 
 # Méthode 1 : Gradient à pas fixe 
 
@@ -18,4 +19,8 @@ def methode1(X0, alpha):
     return Xk, k
 
 if __name__ == "__main__":
+    debut = time.perf_counter()
     print(methode1([1,1,1], 0.01))
+    fin = time.perf_counter()
+    duree = fin - debut
+    print(f"Durée d'exécution : {duree:.6f} secondes")
