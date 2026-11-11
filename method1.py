@@ -12,10 +12,14 @@ def methode1(X0, alpha):
 
     while norme > p.EPS and k < p.KMAX:
         dk = -gradk                     # direction de descente
+        dk[2] = -dk[2]                  # dual correction
         Xk += alpha * dk                # pas fixe
         gradk = p.gradient(Xk)          # grad L(X_k+1)
         norme = np.linalg.norm(gradk)   # norme de grad L(X_k+1)
         k += 1
+        
+        if not np.isfinite(norme):       # the iterates diverged: stop
+            break
     
     return Xk, k
 
