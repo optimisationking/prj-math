@@ -9,24 +9,6 @@ import time
 # puis on met à jour (pas unitaire, alpha_k = 1) :
 #       X_{k+1} = X_k + d_k
 
-
-def hessienne(X):
-    """Hessienne de L(r, h, lambda) par rapport à (r, h, lambda) (matrice 3x3).
-
-    L = pi^2 r^2 (r^2 + h^2) - lam * (pi/3 r^2 h - V0)
-    """
-    r, h, lam = X
-    pi = p.PI
-    d2_rr = pi**2 * (12.0 * r**2 + 2.0 * h**2) - 2.0 * pi * lam * h / 3.0
-    d2_rh = 4.0 * pi**2 * r * h - 2.0 * pi * lam * r / 3.0
-    d2_rl = -2.0 * pi * r * h / 3.0
-    d2_hh = 2.0 * pi**2 * r**2
-    d2_hl = -pi * r**2 / 3.0
-    return np.array([[d2_rr, d2_rh, d2_rl],
-                     [d2_rh, d2_hh, d2_hl],
-                     [d2_rl, d2_hl, 0.0]])
-
-
 def methode3(X0):
     Xk = np.array(X0, dtype=float)
     gradk = p.gradient(Xk)          # grad L(X_0)
@@ -34,7 +16,7 @@ def methode3(X0):
     k = 0
 
     while norme > p.EPS and k < p.KMAX:
-        Hk = hessienne(Xk)
+        Hk = p.hessienne(Xk)
         try:
             dk = np.linalg.solve(Hk, -gradk)   # direction de Newton
         except np.linalg.LinAlgError:
