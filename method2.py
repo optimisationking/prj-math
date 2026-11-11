@@ -10,6 +10,16 @@ BETA = 0.5          # The amount we reduce our step
 C1 = 1e-4           # Constant to define the level of acceptance of the search
 ALPHA_MIN = 1e-12   # Below this value, the search is stopped
 
+def direction(gradk):
+    dk = -gradk 
+    dk[2] = 0.0
+    return dk
+
+def updateX(Xk, ak, dk, gradk):
+    res = Xk + ak * dk 
+    res[2] += RHO * gradk[2]        # dual correction
+    return res
+
 def armijo_condition(Xk, dk, alpha, Lk, slope):
     return p.lagrangien(Xk + alpha * dk) <= Lk + C1 * alpha * slope
 
@@ -34,11 +44,9 @@ def methode2(X0):
     k = 0
 
     while norm > p.EPS and k < p.KMAX:
-        dk = -gradk
-        dk[2] = 0.0
+        dk = direction(gradk)
         ak = line_search(Xk, dk, gradk)
-        Xk += ak * dk
-        Xk[2] += RHO * gradk[2]        # dual correction
+        Xk = updateX(Xk, ak, dk, gradk)       
         gradk = p.gradient(Xk) 
         norm = np.linalg.norm(gradk)
         k += 1

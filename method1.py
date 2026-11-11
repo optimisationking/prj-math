@@ -4,6 +4,14 @@ import time
 
 # Méthode 1 : Gradient à pas fixe 
 
+def direction(gradk):
+    dk = -gradk 
+    dk[2] = -dk[2] # dual correction
+    return dk
+
+def updateX(Xk, alpha, dk):
+    return Xk + alpha * dk
+
 def methode1(X0, alpha):
     Xk = np.array(X0, dtype=float) 
     gradk = p.gradient(Xk)          # grad L(X_0)
@@ -11,9 +19,8 @@ def methode1(X0, alpha):
     k = 0
 
     while norme > p.EPS and k < p.KMAX:
-        dk = -gradk                     # direction de descente
-        dk[2] = -dk[2]                  # dual correction
-        Xk += alpha * dk                # pas fixe
+        dk = direction(gradk)           
+        Xk = updateX(Xk, alpha, dk)     
         gradk = p.gradient(Xk)          # grad L(X_k+1)
         norme = np.linalg.norm(gradk)   # norme de grad L(X_k+1)
         k += 1
