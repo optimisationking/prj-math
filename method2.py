@@ -7,7 +7,7 @@ import time
 RHO = 1.0           # Fixed step for dual correction
 ALPHA_INIT = 1.0    # Initial step that is overly large
 BETA = 0.5          # The amount we reduce our step
-C1 = 1e-4            # Constant to define the level of acceptance of the search
+C1 = 1e-4           # Constant to define the level of acceptance of the search
 ALPHA_MIN = 1e-12   # Below this value, the search is stopped
 
 def armijo_condition(Xk, dk, alpha, Lk, slope):
@@ -36,7 +36,7 @@ def methode2(X0):
     while norm > p.EPS and k < p.KMAX:
         dk = -gradk
         dk[2] = 0.0
-        ak = line_search(Xk, gradk, dk)
+        ak = line_search(Xk, dk, gradk)
         Xk += ak * dk
         Xk[2] += RHO * gradk[2]        # dual correction
         gradk = p.gradient(Xk) 
