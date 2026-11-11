@@ -5,25 +5,25 @@ import numpy as np
 PI = math.pi
 V0 = 1.0
 EPS = 1e-6
-KMAX = 1e5
+KMAX = 100000
 
 def hessienne(X):
     # Matrice hessienne de L par rapport à (r, h, lambda)
     r, h, lam = X 
     return np.array([
         [
-            PI**2 * (12 * r**2 + 2 * h**2) - 2*PI/3 * lam * h, 
-            4 * PI**2 * r * h - 2 * PI/3 * lam * r,
-            -2 * PI / 3 * r * h
+            PI**2 * (12.0 * r**2 + 2.0 * h**2) - 2.0 * PI / 3.0 * lam * h, 
+            4.0 * PI**2 * r * h - 2.0 * PI / 3.0 * lam * r,
+            -2.0 * PI / 3.0 * r * h
         ],
         [
-            4 * PI**2 * r * h - 2 * PI/3 * lam * r,
-            2 * PI**2 * r**2,
-            -PI/3 * r**2
+            4.0 * PI**2 * r * h - 2.0 * PI / 3.0 * lam * r,
+            2.0 * PI**2 * r**2,
+            -PI / 3.0 * r**2
         ],
         [ 
-            -2 * PI/3 * r * h,
-            -PI/3 * r**2,
+            -2.0 * PI / 3.0 * r * h,
+            -PI / 3.0 * r**2,
             0.0
         ]
     ])
