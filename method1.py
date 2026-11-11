@@ -6,14 +6,15 @@ import time
 
 def methode1(X0, alpha):
     Xk = np.array(X0, dtype=float) 
-    norm = 1.0
+    gradk = p.gradient(Xk)          # grad L(X_0)
+    norme = np.linalg.norm(gradk)   # norme de grad L(X_0)
     k = 0
 
-    while norm > p.EPS and k < p.KMAX:
-        dk = -p.gradient(Xk)
-        Xkp1 = Xk + alpha * dk
-        norm = np.linalg.norm(dk)
-        Xk = Xkp1
+    while norme > p.EPS and k < p.KMAX:
+        dk = -gradk                     # direction de descente
+        Xk += alpha * dk                # pas fixe
+        gradk = p.gradient(Xk)          # grad L(X_k+1)
+        norme = np.linalg.norm(gradk)   # norme de grad L(X_k+1)
         k += 1
     
     return Xk, k
