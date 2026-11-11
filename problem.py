@@ -7,6 +7,12 @@ V0 = 1.0
 EPS = 1e-6
 KMAX = 1e5
 
+def constraint_gradient(X):
+    # c(r, h) = pi/3 * r^2 * h - V0
+    # Formule: grad c(r, h) = (2 * pi/3 * r * h, pi/3 * r^2)
+    r, h, _ = X 
+    return np.array([2 * (PI / 3) * r * h, (PI / 3) * r**2])
+
 def lagrangien(X):
     # Formule: L(X) = pi^2 r^2 (r^2 + h^2) - lam * (pi/3 r^2 h - V0)
     #                 |--------f---------|      |-------c-------|
