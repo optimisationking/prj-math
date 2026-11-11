@@ -7,6 +7,27 @@ V0 = 1.0
 EPS = 1e-6
 KMAX = 1e5
 
+def hessienne(X):
+    # Matrice hessienne de L par rapport à (r, h, lambda)
+    r, h, lam = X 
+    return np.array([
+        [
+            PI**2 * (12 * r**2 + 2 * h**2) - 2*PI/3 * lam * h, 
+            4 * PI**2 * r * h - 2 * PI/3 * lam * r,
+            -2 * PI / 3 * r * h
+        ],
+        [
+            4 * PI**2 * r * h - 2 * PI/3 * lam * r,
+            2 * PI**2 * r**2,
+            -PI/3 * r**2
+        ],
+        [ 
+            -2 * PI/3 * r * h,
+            -PI/3 * r**2,
+            0.0
+        ]
+    ])
+
 def constraint_gradient(X):
     # c(r, h) = pi/3 * r^2 * h - V0
     # Formule: grad c(r, h) = (2 * pi/3 * r * h, pi/3 * r^2)
