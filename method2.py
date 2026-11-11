@@ -2,41 +2,54 @@ import problem as p
 import numpy as np
 import time
 
-#Methode 2 : Gradient à pas optimale
+# Methode 2 : Gradient à pas optimal (règle d'Armijo)
 
-def line_search(X0, d, alpha_init=1.0, Beta=0.5, c=1e-4):
-    #d the direction of descent
-    #alpha_init we define an initial step that is overly large to then reduce it
-    #Beta the amount we reduce our step
-    #c the constant to define the level of acceptance of the search
-    
-    
-    alpha = alpha_init
-    grad = p.gradient(X0)
+RHO = 1.0           # Fixed step for dual correction
+ALPHA_INIT = 1.0    # Initial step that is overly large
+BETA = 0.5          # The amount we reduce our step
+C1 = 1e-4            # Constant to define the level of acceptance of the search
+ALPHA_MIN = 1e-12   # Below this value, the search is stopped
 
-    #till the armijo condition is fulfilled, we decrease the step size
-    while p.lagrangien(X0 + alpha*d) > (p.lagrangien(X0) + c * alpha * np.dot(d, grad)):
-        alpha *= Beta
-        if alpha < 1e-12:       #if alpha gets too small, break the cycle
+def armijo_condition(Xk, dk, alpha, Lk, slope):
+    return p.lagrangien(Xk + alpha * dk) <= Lk + C1 * alpha * slope
+
+def line_search(Xk, dk, gradk):
+    Lk = p.lagrangien(Xk)
+    slope = np.dot(gradk, dk)
+    alpha = ALPHA_INIT 
+
+    # till the armijo condition is fulfilled, we decrease the step size
+    while not armijo_condition(Xk, dk, alpha, Lk, slope):
+        alpha *= BETA
+        if alpha < ALPHA_MIN:       #if alpha gets too small, break the cycle
             break
+
     return alpha
 
 
-def methode2(X0, max_iter=10000):
+def methode2(X0):
+    Xk = np.array(X0, dtype=float)
+    gradk = p.gradient(Xk)
+    norm = np.linalg.norm(gradk)
     k = 0
-    Xk = np.array(X0, dtype=float).copy()
-    norm = 1.0
-    while norm > p.EPS and k < max_iter:
-        dk = -p.gradient(Xk)
-        alphaK = line_search(Xk, dk)
-        Xk += alphaK*dk
-        norm = np.linalg.norm(p.gradient(Xk))
+
+    while norm > p.EPS and k < p.KMAX:
+        dk = -gradk
+        dk[2] = 0.0
+        ak = line_search(Xk, gradk, dk)
+        Xk += ak * dk
+        Xk[2] += RHO * gradk[2]        # dual correction
+        gradk = p.gradient(Xk) 
+        norm = np.linalg.norm(gradk)
         k += 1
+        if not np.isfinite(norm):       # the iterates diverged: stop
+            break
+
     return Xk, k
 
 if __name__ == "__main__":
     debut = time.perf_counter()
-    print(methode2([1,1,1], 0.01))
+    print(methode2([1,1,1]))
     fin = time.perf_counter()
     duree = fin - debut
     print(f"Durée d'exécution : {duree:.6f} secondes")
