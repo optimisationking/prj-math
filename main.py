@@ -1,13 +1,13 @@
 import time
 import numpy as np
 import problem as p
+import input as inp
 from method1 import methode1
 from method2 import methode2
 from method3 import methode3
 from method4 import methode4
 
-X0 = [1, 1.5, 10]  
-ALPHA = 0.01
+np.seterr(over="ignore", invalid="ignore") 
 
 def exact_solution():
     # Analytical solution X* = (r*, h*, lambda*) of the problem
@@ -23,29 +23,30 @@ def run(method):
 def status(Xk, grad_norm):
     # Describe how the method ended
     if not grad_norm <= p.EPS:          
-        return "no convergence"
+        return "pas de convergence"
     if Xk[0] <= 0 or Xk[1] <= 0:        
-        return "converged, r or h <= 0"
-    return "converged"
+        return "convergence, r or h <= 0"
+    return "convergence"
 
 if __name__ == "__main__":
-    np.seterr(over="ignore", invalid="ignore")
+    X0, alpha = inp.read_input()
     X_star = exact_solution()
 
-    print("Parameters")
-    print(f"  V0   = {p.V0}")
-    print(f"  X0   = {X0}")
-    print(f"  eps  = {p.EPS}")
-    print(f"  KMAX = {p.KMAX}")
-    print(f"  X*   = ({X_star[0]:.8f}, {X_star[1]:.8f}, {X_star[2]:.8f})")
+    print("Paramètres")
+    print(f"  V0    = {p.V0}")
+    print(f"  X0    = {X0}")
+    print(f"  alpha = {alpha}   (méthode 1)")
+    print(f"  eps   = {p.EPS}")
+    print(f"  KMAX  = {p.KMAX}")
+    print(f"  X*    = ({X_star[0]:.8f}, {X_star[1]:.8f}, {X_star[2]:.8f})")
     print()
 
     # The methods, all called from the same X0
     methods = [
-        ("1. Pas fixe",   lambda: methode1(X0, ALPHA)),
-        ("2. Pas optimal",  lambda: methode2(X0)),
-        ("3. Newton",       lambda: methode3(X0)),
-        ("4. quasi-Newton BFGS", lambda: methode4(X0))
+        ("1. Pas fixe",             lambda: methode1(X0, alpha)),
+        ("2. Pas optimal",          lambda: methode2(X0)),
+        ("3. Newton",               lambda: methode3(X0)),
+        ("4. quasi-Newton BFGS",    lambda: methode4(X0))
     ]
 
     # Comparison table
@@ -65,6 +66,6 @@ if __name__ == "__main__":
 
     # Points returned by the methods
     print()
-    print("Last point X_k = (r, h, lambda)")
+    print("Dernier point X_k = (r, h, lambda)")
     for name, Xk in results:
         print(f"  {name:<25} ({Xk[0]:.8f}, {Xk[1]:.8f}, {Xk[2]:.8f})")
