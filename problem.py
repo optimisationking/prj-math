@@ -10,22 +10,19 @@ KMAX = 100000
 def hessienne(X):
     # Matrice hessienne de L par rapport à (r, h, lambda)
     r, h, lam = X 
+
+    d2L_dr2 = PI**2 * (12.0 * r**2 + 2.0 * h**2) - 2.0 * PI / 3.0 * lam * h
+    d2L_drdh = 4.0 * PI**2 * r * h - 2.0 * PI / 3.0 * lam * r
+    d2L_dh2 = 2.0 * PI**2 * r**2
+
+    d2L_drdlam = -2.0 * PI / 3.0 * r * h
+    d2L_dhdlam = -PI / 3.0 * r**2
+    d2L_dlam2 = 0.0
+
     return np.array([
-        [
-            PI**2 * (12.0 * r**2 + 2.0 * h**2) - 2.0 * PI / 3.0 * lam * h, 
-            4.0 * PI**2 * r * h - 2.0 * PI / 3.0 * lam * r,
-            -2.0 * PI / 3.0 * r * h
-        ],
-        [
-            4.0 * PI**2 * r * h - 2.0 * PI / 3.0 * lam * r,
-            2.0 * PI**2 * r**2,
-            -PI / 3.0 * r**2
-        ],
-        [ 
-            -2.0 * PI / 3.0 * r * h,
-            -PI / 3.0 * r**2,
-            0.0
-        ]
+        [d2L_dr2,    d2L_drdh,   d2L_drdlam],
+        [d2L_drdh,   d2L_dh2,    d2L_dhdlam],
+        [d2L_drdlam, d2L_dhdlam, d2L_dlam2],
     ])
 
 def constraint_gradient(X):
