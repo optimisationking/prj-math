@@ -1,4 +1,5 @@
-# Projet de Mathématiques : Minimisation sous une contrainte d'égalité
+# Projet de Mathématiques
+# Minimisation sous une contrainte d'égalité : Optimisation numérique
 
 - **Groupe :** Quang Minh DO, Arin BILGIN, Liam GODARD
 - **Encadrant :** Adel HAMDI
