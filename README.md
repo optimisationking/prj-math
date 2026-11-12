@@ -21,9 +21,9 @@ prj-math/
 ## Exécutables disponibles
 | Fichier | Description |
 |---|---|
-| 'main.py' | Lance les quatre méthodes depuis le même 'X0' et affiche un tableau de comparaison |
-| 'method1.py', 'method2.py', 'method3.py', 'method4.py' | Lancent chacun une méthode (gradient à pas fixe, gradient à pas optimal, Newton, quasi-Newton BFGS) et affichent les données et les résultats. |
-| 'input.py' | Affiche 'X0' et 'alpha' lus dans 'input.txt' |
+| `main.py` | Lance les quatre méthodes depuis le même `X0` et affiche un tableau de comparaison |
+| `method1.py`, `method2.py`, `method3.py`, `method4.py` | Lancent chacun une méthode (gradient à pas fixe, gradient à pas optimal, Newton, quasi-Newton BFGS) et affichent les données et les résultats. |
+| `input.py` | Affiche `X0` et `alpha` lus dans `input.txt` |
 
 ## Dépendances
 
@@ -43,5 +43,5 @@ Pour exécuter une seule méthode, par exemple la méthode 4 :
 python method4.py
 ```
 
-## Fichier d'entrée
-Pour modifier les paramètres ('X0' et 'alpha'), ouvrez le fichier 'input.txt' et remplacez les valeurs. Si une donnée est manquante ou invalide, le programme s'arrête et affiche un message d'erreur.
+## Fichier d`entrée
+Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` et remplacez les valeurs. Si une donnée est manquante ou invalide, le programme s'arrête et affiche un message d'erreur.
