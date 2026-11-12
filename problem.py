@@ -48,3 +48,8 @@ def gradient(X):
     dL_dh = r**2 * (2.0 * PI**2 * h - PI * lam / 3.0)
     dL_dlam = -(PI * r**2 * h / 3.0 - V0)
     return np.array([dL_dr, dL_dh, dL_dlam])
+
+def exact_solution():
+    # Analytical solution X* = (r*, h*, lambda*) of the problem
+    h = (6 * V0 / np.pi) ** (1 / 3)
+    return np.array([h / np.sqrt(2), h, 6 * np.pi * h])

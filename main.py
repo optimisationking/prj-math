@@ -9,11 +9,6 @@ from method4 import methode4
 
 np.seterr(over="ignore", invalid="ignore") 
 
-def exact_solution():
-    # Analytical solution X* = (r*, h*, lambda*) of the problem
-    h = (6 * p.V0 / np.pi) ** (1 / 3)
-    return np.array([h / np.sqrt(2), h, 6 * np.pi * h])
-
 def run(method):
     start = time.perf_counter()
     Xk, k = method()
@@ -30,7 +25,7 @@ def status(Xk, grad_norm):
 
 if __name__ == "__main__":
     X0, alpha = inp.read_input()
-    X_star = exact_solution()
+    X_star = p.exact_solution()
 
     print("Paramètres")
     print(f"  V0    = {p.V0}")
