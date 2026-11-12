@@ -4,9 +4,9 @@ import problem as p
 from method1 import methode1
 from method2 import methode2
 from method3 import methode3
-from method4_minh import methode4
+from method4 import methode4
 
-X0 = [1, 1, 20]  
+X0 = [1, 1.5, 10]  
 ALPHA = 0.01
 
 def exact_solution():
@@ -29,6 +29,7 @@ def status(Xk, grad_norm):
     return "converged"
 
 if __name__ == "__main__":
+    np.seterr(over="ignore", invalid="ignore")
     X_star = exact_solution()
 
     print("Parameters")
@@ -44,10 +45,11 @@ if __name__ == "__main__":
         ("1. Pas fixe",   lambda: methode1(X0, ALPHA)),
         ("2. Pas optimal",  lambda: methode2(X0)),
         ("3. Newton",       lambda: methode3(X0)),
+        ("4. quasi-Newton BFGS", lambda: methode4(X0))
     ]
 
     # Comparison table
-    header = (f"{'Method':<16} {'Iterations':>10} {'||grad L||':>12} "
+    header = (f"{'Method':<25} {'Iterations':>10} {'||grad L||':>12} "
               f"{'||X - X*||':>12} {'Time (s)':>10}  {'Status'}")
     print(header)
     print("-" * len(header))
@@ -58,11 +60,11 @@ if __name__ == "__main__":
         grad_norm = np.linalg.norm(p.gradient(Xk))
         error = np.linalg.norm(Xk - X_star)
         results.append((name, Xk))
-        print(f"{name:<16} {k:>10d} {grad_norm:>12.2e} {error:>12.2e} "
+        print(f"{name:<25} {k:>10d} {grad_norm:>12.2e} {error:>12.2e} "
               f"{duration:>10.6f}  {status(Xk, grad_norm)}")
 
     # Points returned by the methods
     print()
     print("Last point X_k = (r, h, lambda)")
     for name, Xk in results:
-        print(f"  {name:<16} ({Xk[0]:.8f}, {Xk[1]:.8f}, {Xk[2]:.8f})")
+        print(f"  {name:<25} ({Xk[0]:.8f}, {Xk[1]:.8f}, {Xk[2]:.8f})")
