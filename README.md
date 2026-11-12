@@ -19,6 +19,7 @@ prj-math/
 ```
 
 ## Exécutables disponibles
+
 | Fichier | Description |
 |---|---|
 | `main.py` | Lance les quatre méthodes depuis le même `X0` et affiche un tableau de comparaison |
@@ -32,16 +33,28 @@ prj-math/
 | Python | 3.13.5 |
 | NumPy | 2.5.3 |
 
+Pour installer NumPy, lancer :
+
+```
+pip install numpy
+```
+
 ## Exécution
-Pour lancer les quatres méthodes :
+
+Dans un terminal, il faut se placer dans le dossier qui contient les fichiers, puis lancer :
+
 ```
 python main.py
 ```
 
-Pour exécuter une seule méthode, par exemple la méthode 4 :
+Pour exécuter une seule méthode, par exemple la méthode 4, lancer :
+
 ```
 python method4.py
 ```
 
+Selon l'installation, la commande peut être `python3` à la place de `python`.
+
 ## Fichier d'entrée
+
 Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` et remplacez les valeurs. Si une donnée est manquante ou invalide, le programme s'arrête et affiche un message d'erreur.
