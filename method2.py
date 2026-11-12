@@ -1,5 +1,6 @@
 import problem as p
 import numpy as np
+import input as inp
 import time
 
 # Methode 2 : Gradient à pas optimal (règle d'Armijo)
@@ -36,7 +37,6 @@ def line_search(Xk, dk, gradk):
 
     return alpha
 
-
 def methode2(X0):
     Xk = np.array(X0, dtype=float)
     gradk = p.gradient(Xk)
@@ -56,10 +56,29 @@ def methode2(X0):
     return Xk, k
 
 if __name__ == "__main__":
+    X0, _ = inp.read_input()
+    X_star = p.exact_solution()
+
+    print("Méthode 2 : Méthode de gradient à pas optimal")
+    print()
+
+    print("Données")
+    print("V0   :", p.V0)
+    print("X0   :", X0)
+    print("eps  :", p.EPS)
+    print("KMAX :", p.KMAX)
+    print()
+
     debut = time.perf_counter()
-    print(methode2([1,1,1]))
+    Xk, k = methode2(X0)
     fin = time.perf_counter()
     duree = fin - debut
-    print(f"Durée d'exécution : {duree:.6f} secondes")
 
+    print("Résultats")
+    print("Solution pas optimal :", Xk)
+    print("Solution exacte      :", X_star)
+    print("Itérations           :", k)
+    print("||grad L||           :", np.linalg.norm(p.gradient(Xk)))
+    print("Erreur               :", np.linalg.norm(Xk - X_star))
+    print(f"Durée d'exécution    : {duree:.6f} secondes")
 

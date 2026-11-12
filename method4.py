@@ -1,5 +1,6 @@
 import problem as p
 import numpy as np
+import input as inp
 import time
 
 # Méthode 4 : quasi-Newton BFGS (SQP-BFGS)
@@ -84,17 +85,28 @@ def methode4(X0):
 
 
 if __name__ == "__main__":
+    X0, _ = inp.read_input()
+    X_etoile = p.exact_solution()
+
+    print("Méthode 4 : Méthode de quasi-Newton BFGS")
+    print()
+
+    print("Données")
+    print("V0   :", p.V0)
+    print("X0   :", X0)
+    print("eps  :", p.EPS)
+    print("KMAX :", p.KMAX)
+    print()
+
     debut = time.perf_counter()
-    Xk, k = methode4([1, 1, 1])
+    Xk, k = methode4(X0)
     fin = time.perf_counter()
     duree = fin - debut
 
-    h_etoile = (6 * p.V0 / p.PI) ** (1 / 3)
-    X_etoile = np.array([h_etoile / np.sqrt(2), h_etoile, 6 * p.PI * h_etoile])
-
-    print("Solution BFGS   :", Xk)
-    print("Solution exacte :", X_etoile)
-    print("Itérations      :", k)
-    print("||grad L||      :", np.linalg.norm(p.gradient(Xk)))
-    print("Erreur          :", np.linalg.norm(Xk - X_etoile))
-    print(f"Durée d'exécution : {duree:.6f} secondes")
+    print("Résultats")
+    print("Solution BFGS        :", Xk)
+    print("Solution exacte      :", X_etoile)
+    print("Itérations           :", k)
+    print("||grad L||           :", np.linalg.norm(p.gradient(Xk)))
+    print("Erreur               :", np.linalg.norm(Xk - X_etoile))
+    print(f"Durée d'exécution    : {duree:.6f} secondes")
