@@ -43,5 +43,5 @@ Pour exécuter une seule méthode, par exemple la méthode 4 :
 python method4.py
 ```
 
-## Fichier d`entrée
+## Fichier d'entrée
 Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` et remplacez les valeurs. Si une donnée est manquante ou invalide, le programme s'arrête et affiche un message d'erreur.
