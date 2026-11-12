@@ -1,0 +1,9 @@
+# Fichier d'entrée : modifier les valeurs après le signe "="
+
+# Itéré initial X0 = (r, h, lambda), avec r > 0 et h > 0
+r = 1
+h = 1.5
+lambda = 10
+
+# Pas fixe de la méthode 1, avec alpha > 0
+alpha = 0.01
