@@ -7,7 +7,7 @@ import time
 
 def direction(gradk):
     dk = -gradk 
-    dk[2] = -dk[2] # dual correction
+    # dk[2] = -dk[2] # correction duale
     return dk
 
 def updateX(Xk, alpha, dk):
@@ -19,12 +19,20 @@ def methode1(X0, alpha):
     norme = np.linalg.norm(gradk)   # norme de grad L(X_0)
     k = 0
 
+    with open("result.txt", "w") as f:
+        f.write("")
+
     while norme > p.EPS and k < p.KMAX:
         dk = direction(gradk)           
         Xk = updateX(Xk, alpha, dk)     
         gradk = p.gradient(Xk)          # grad L(X_k+1)
         norme = np.linalg.norm(gradk)   # norme de grad L(X_k+1)
         k += 1
+        
+        # debug print to file the results
+        if k % 50 == 0:
+            with open("result.txt", "a") as f:
+                f.write(f"k = {k} : L = {p.lagrangien(Xk):.8f}, Xk = ({Xk[0]:.8f}, {Xk[1]:.8f}, {Xk[2]:.8f})\n")
         
         if not np.isfinite(norme):       # the iterates diverged: stop
             break
