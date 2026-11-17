@@ -5,7 +5,8 @@ import numpy as np
 PI = math.pi
 V0 = 1.0
 EPS = 1e-6
-KMAX = 100000
+KMAX = 10000
+XMAX = 1e10
 
 def hessienne(X):
     # Matrice hessienne de L par rapport à (r, h, lambda)

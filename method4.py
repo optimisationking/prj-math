@@ -1,11 +1,15 @@
 import problem as p
 import numpy as np
 import input as inp
+import log as lg
 import time
 
 # Méthode 4 : quasi-Newton BFGS (SQP-BFGS)
 # Newton appliqué à grad L = 0, où la Hessienne de L (en r, h) est remplacée
 # par une matrice B_k 2x2 mise à jour avec la formule BFGS.
+
+LOG_FILE = "resultat_methode4.csv"
+LOG_COLUMNS = ("alpha", "rho", "abs_c") 
 
 C_ARMIJO = 0.1          # constant of the Armijo condition
 ALPHA_MIN = 1e-12       # smallest step accepted by the line search
@@ -64,12 +68,14 @@ def update_X(Xk, ak, dk):
     return Xnew
 
 def methode4(X0):
+    X_star = p.exact_solution()
     Xk = np.array(X0, dtype=float)
     gradk = p.gradient(Xk)
     norm = np.linalg.norm(gradk)
     Bk = np.eye(2) 
     rho = 1.0 
     k = 0
+    rows = [lg.make_row(k, Xk, norm, X_star, (np.nan, rho, abs(gradk[2])))] 
 
     while norm > p.EPS and k < p.KMAX:
         dk = bfgs_direction(Xk, gradk, Bk)
@@ -81,7 +87,12 @@ def methode4(X0):
         norm = np.linalg.norm(gradk)
         k += 1
 
-    return Xk, k
+        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, rho, abs(gradk[2]))))
+
+        if not np.isfinite(norm) or np.linalg.norm(Xk) > p.XMAX:      # the iterates diverged: stop
+            break
+
+    return Xk, k, rows
 
 
 if __name__ == "__main__":
@@ -99,9 +110,11 @@ if __name__ == "__main__":
     print()
 
     debut = time.perf_counter()
-    Xk, k = methode4(X0)
+    Xk, k, rows = methode4(X0)
     fin = time.perf_counter()
     duree = fin - debut
+
+    lg.write_log(LOG_FILE, rows, LOG_COLUMNS)
 
     print("Résultats")
     print("Solution BFGS        :", Xk)

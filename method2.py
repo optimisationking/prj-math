@@ -1,25 +1,24 @@
 import problem as p
 import numpy as np
 import input as inp
+import log as lg
 import time
 
 # Methode 2 : Gradient à pas optimal (règle d'Armijo)
 
-RHO = 1.0           # Fixed step for dual correction
+LOG_FILE = "resultat_methode2.csv"
+LOG_COLUMNS = ("alpha", "n_trials", "armijo_ok")  
+
 ALPHA_INIT = 1.0    # Initial step that is overly large
 BETA = 0.5          # The amount we reduce our step
 C1 = 1e-4           # Constant to define the level of acceptance of the search
 ALPHA_MIN = 1e-12   # Below this value, the search is stopped
 
 def direction(gradk):
-    dk = -gradk 
-    dk[2] = 0.0
-    return dk
+    return -gradk 
 
-def updateX(Xk, ak, dk, gradk):
-    res = Xk + ak * dk 
-    res[2] += RHO * gradk[2]        # dual correction
-    return res
+def updateX(Xk, ak, dk):
+    return Xk + ak * dk
 
 def armijo_condition(Xk, dk, alpha, Lk, slope):
     return p.lagrangien(Xk + alpha * dk) <= Lk + C1 * alpha * slope
@@ -28,32 +27,38 @@ def line_search(Xk, dk, gradk):
     Lk = p.lagrangien(Xk)
     slope = np.dot(gradk, dk)
     alpha = ALPHA_INIT 
+    n_trials = 1
 
     # till the armijo condition is fulfilled, we decrease the step size
     while not armijo_condition(Xk, dk, alpha, Lk, slope):
         alpha *= BETA
+        n_trials += 1
         if alpha < ALPHA_MIN:       #if alpha gets too small, break the cycle
-            break
+            return alpha, n_trials, False 
 
-    return alpha
+    return alpha, n_trials, True
 
 def methode2(X0):
+    X_star = p.exact_solution()
     Xk = np.array(X0, dtype=float)
     gradk = p.gradient(Xk)
     norm = np.linalg.norm(gradk)
     k = 0
+    rows = [lg.make_row(k, Xk, norm, X_star, (np.nan, 0, True))]
 
     while norm > p.EPS and k < p.KMAX:
         dk = direction(gradk)
-        ak = line_search(Xk, dk, gradk)
-        Xk = updateX(Xk, ak, dk, gradk)       
+        ak, n_trials, armijo_ok = line_search(Xk, dk, gradk)
+        Xk = updateX(Xk, ak, dk)       
         gradk = p.gradient(Xk) 
         norm = np.linalg.norm(gradk)
         k += 1
-        if not np.isfinite(norm):       # the iterates diverged: stop
+        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, n_trials, armijo_ok)))
+
+        if not np.isfinite(norm) or np.linalg.norm(Xk) > p.XMAX:       # the iterates diverged: stop
             break
 
-    return Xk, k
+    return Xk, k, rows
 
 if __name__ == "__main__":
     X0, _ = inp.read_input()
@@ -70,9 +75,11 @@ if __name__ == "__main__":
     print()
 
     debut = time.perf_counter()
-    Xk, k = methode2(X0)
+    Xk, k, rows = methode2(X0)
     fin = time.perf_counter()
     duree = fin - debut
+
+    lg.write_log(LOG_FILE, rows, LOG_COLUMNS) 
 
     print("Résultats")
     print("Solution pas optimal :", Xk)
