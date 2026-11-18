@@ -11,7 +11,8 @@ np.seterr(over="ignore", invalid="ignore")
 
 def run(method):
     start = time.perf_counter()
-    Xk, k = method()
+    res = method()
+    Xk, k = res[0], res[1]
     duration = time.perf_counter() - start
     return Xk, k, duration
 
