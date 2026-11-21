@@ -62,9 +62,7 @@ def bfgs_update(Bk, Xk, Xnew):
     return Bk - np.outer(Bs, Bs) / np.dot(s, Bs) + np.outer(y, y) / np.dot(y, s)
 
 def update_X(Xk, ak, dk):
-    # (r, h) moves with step ak, lambda takes the full step
     Xnew = Xk + ak * dk
-    Xnew[2] = Xk[2] + dk[2]
     return Xnew
 
 def methode4(X0):

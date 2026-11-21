@@ -5,7 +5,7 @@ import numpy as np
 PI = math.pi
 V0 = 1.0
 EPS = 1e-6
-KMAX = 10000
+KMAX = 50000
 XMAX = 1e10
 
 def hessienne(X):
