@@ -9,10 +9,10 @@ import time
 LOG_FILE = "resultat_methode2.csv"
 LOG_COLUMNS = ("alpha", "n_trials", "armijo_ok")  
 
-ALPHA_INIT = 1.0    # Initial step that is overly large
-BETA = 0.5          # The amount we reduce our step
-C1 = 1e-4           # Constant to define the level of acceptance of the search
-ALPHA_MIN = 1e-12   # Below this value, the search is stopped
+ALPHA_INIT = 1.0    # initial step that is overly large
+BETA = 0.5          # ihe amount we reduce our step
+C1 = 1e-4           # constant to define the level of acceptance of the search
+ALPHA_MIN = 1e-12   # below this value, the armijo search is stopped
 
 def direction(gradk):
     return -gradk 
@@ -29,11 +29,11 @@ def line_search(Xk, dk, gradk):
     alpha = ALPHA_INIT 
     n_trials = 1
 
-    # till the armijo condition is fulfilled, we decrease the step size
+    # until the armijo condition is fulfilled, we decrease the step size
     while not armijo_condition(Xk, dk, alpha, Lk, slope):
         alpha *= BETA
         n_trials += 1
-        if alpha < ALPHA_MIN:       #if alpha gets too small, break the cycle
+        if alpha < ALPHA_MIN:       # if alpha gets too small, break the cycle and return False since condition not fulfilled
             return alpha, n_trials, False 
 
     return alpha, n_trials, True
@@ -48,12 +48,12 @@ def methode2(X0):
 
     while norm > p.EPS and k < p.KMAX:
         dk = direction(gradk)
-        ak, n_trials, armijo_ok = line_search(Xk, dk, gradk)
-        Xk = updateX(Xk, ak, dk)       
+        ak, n_trials, armijo_ok = line_search(Xk, dk, gradk)    # get step alpha using armijo and collect other info
+        Xk = updateX(Xk, ak, dk)
         gradk = p.gradient(Xk) 
         norm = np.linalg.norm(gradk)
         k += 1
-        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, n_trials, armijo_ok)))
+        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, n_trials, armijo_ok)))    # update log
 
         if not np.isfinite(norm) or np.linalg.norm(Xk) > p.XMAX:       # the iterates diverged: stop
             break

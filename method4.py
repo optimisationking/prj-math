@@ -4,19 +4,22 @@ import input as inp
 import log as lg
 import time
 
-# Méthode 4 : quasi-Newton BFGS (SQP-BFGS)
-# Newton appliqué à grad L = 0, où la Hessienne de L (en r, h) est remplacée
-# par une matrice B_k 2x2 mise à jour avec la formule BFGS.
+# Méthode 4 : Méthode de quasi-Newton BFGS (SQP-BFGS)
+#
+# Apply Newton, but H_k is replaced by a matrix B_k that approximates H_k
+# B_k is updated by BFGS formula
+#
 
 LOG_FILE = "resultat_methode4.csv"
-LOG_COLUMNS = ("alpha", "rho", "abs_c") 
+LOG_COLUMNS = ("alpha", "abs_c") 
 
 C_ARMIJO = 0.1          # constant of the Armijo condition
 ALPHA_MIN = 1e-12       # smallest step accepted by the line search
 YS_MIN = 1e-12          # below this value, BFGS update is skipped
 
 def bfgs_direction(Xk, gradk, Bk):
-    # Solve quasi-Newton system Hk dk = -grad L(Xk)
+    # solve quasi-Newton system Mk dk = -grad L(Xk)
+
     grad_c = p.constraint_gradient(Xk)
     Hk = np.zeros((3, 3))
     Hk[:2, :2] = Bk 
@@ -25,8 +28,9 @@ def bfgs_direction(Xk, gradk, Bk):
     return np.linalg.solve(Hk, -gradk)
 
 def merit(X, rho):
-    # Merit function phi = f + rho * |c|
-    r, h, _ = X 
+    # merit function phi = f + rho * |c|
+
+    r, h, _ = X
     if r <= 0 or h <= 0:
         return np.inf 
     f = p.lagrangien([r, h, 0.0])
@@ -34,8 +38,9 @@ def merit(X, rho):
     return f + rho * abs(c)
 
 def armijo_step(Xk, gradk, dk, rho):
-    # Armijo backtracking on the merit function
-    # Returns the step and the new rho
+    # armijo backtracking on the merit function
+    # returns the step
+
     lam = Xk[2]
     c = -gradk[2]
     rho = max(rho, abs(lam + dk[2]) + 1.0)
@@ -47,10 +52,11 @@ def armijo_step(Xk, gradk, dk, rho):
     while merit(Xk + alpha * dk, rho) > phik + C_ARMIJO * alpha * slope and alpha > ALPHA_MIN:
         alpha /= 2.0
 
-    return alpha, rho
+    return alpha
 
 def bfgs_update(Bk, Xk, Xnew):
-    # Update Bk with the BFGS formula
+    # update Bk with the BFGS formula
+
     s = Xnew[:2] - Xk[:2]
     X_mixed = np.array([Xk[0], Xk[1], Xnew[2]])
     y = p.gradient(Xnew)[:2] - p.gradient(X_mixed)[:2]
@@ -70,22 +76,22 @@ def methode4(X0):
     Xk = np.array(X0, dtype=float)
     gradk = p.gradient(Xk)
     norm = np.linalg.norm(gradk)
-    Bk = np.eye(2) 
+    Bk = np.eye(2)      # B_0 = I_2
     rho = 1.0 
     k = 0
-    rows = [lg.make_row(k, Xk, norm, X_star, (np.nan, rho, abs(gradk[2])))] 
+    rows = [lg.make_row(k, Xk, norm, X_star, (np.nan, abs(gradk[2])))] 
 
     while norm > p.EPS and k < p.KMAX:
         dk = bfgs_direction(Xk, gradk, Bk)
-        ak, rho = armijo_step(Xk, gradk, dk, rho)
-        Xnew = update_X(Xk, ak, dk)
-        Bk = bfgs_update(Bk, Xk, Xnew)
-        Xk = Xnew 
+        ak = armijo_step(Xk, gradk, dk, rho)   # update step on the merit function
+        Xnew = update_X(Xk, ak, dk)     
+        Bk = bfgs_update(Bk, Xk, Xnew)      # update Bk
+        Xk = Xnew       # update Xk
         gradk = p.gradient(Xk)
         norm = np.linalg.norm(gradk)
         k += 1
 
-        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, rho, abs(gradk[2]))))
+        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, abs(gradk[2]))))  # update log
 
         if not np.isfinite(norm) or np.linalg.norm(Xk) > p.XMAX:      # the iterates diverged: stop
             break
