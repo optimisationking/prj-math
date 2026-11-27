@@ -4,39 +4,41 @@ import input as inp
 import log as lg
 import time
 
-# Méthode 3 : Méthode de Newton (appliquée à grad L(r, h, lambda) = 0)
+# Méthode 3 : Méthode de Newton
 #
-# À chaque itération, on résout le système linéaire 3x3 :
-#       Hess L(X_k) d_k = - grad L(X_k)
-# puis on met à jour (pas unitaire, alpha_k = 1) :
-#       X_{k+1} = X_k + d_k
+# At each iteration, we solve the linear system H(X_k) d_k = -grad L(X_k) 
+#   where H(X_k) is the hessian matrix of the lagrangien
+# Then, we update X with step alpha = 1 : X_{k + 1} = X_k + d_k
+#
+# For analysis, we also calculate the condition number of the matrix A, defined by
+#       cond(A) = ||A|| * ||A^-1||
+# Significance: Theoretically, A is singular when cond(A) = +infty
 
 LOG_FILE = "resultat_methode3.csv"
 LOG_COLUMNS = ("alpha", "cond_H")
 
+def direction(gradk):
+    Hk = p.hessienne(Xk)
+    return np.linalg.solve(Hk, -gradk)
+
 def methode3(X0):
     X_star = p.exact_solution()
     Xk = np.array(X0, dtype=float)
-    gradk = p.gradient(Xk)          # grad L(X_0)
-    norme = np.linalg.norm(gradk)   # norme de grad L(X_0)
+    gradk = p.gradient(Xk)         
+    norme = np.linalg.norm(gradk)  
     cond_H = np.linalg.cond(p.hessienne(Xk))
     k = 0
     rows = [lg.make_row(k, Xk, norme, X_star, (1.0, cond_H))]
 
     while norme > p.EPS and k < p.KMAX:
-        Hk = p.hessienne(Xk)
-        try:
-            dk = np.linalg.solve(Hk, -gradk)   # direction de Newton
-        except np.linalg.LinAlgError:
-            print(f"Hessienne singulière à l'itération {k} : arrêt.")
-            break
-        Xk = Xk + dk                    # pas unitaire (alpha_k = 1)
-        gradk = p.gradient(Xk)          # grad L(X_k+1)
-        norme = np.linalg.norm(gradk)   # norme de grad L(X_k+1)
+        dk = direction(gradk)
+        Xk = Xk + dk        # alpha = 1
+        gradk = p.gradient(Xk)          
+        norme = np.linalg.norm(gradk)   
         k += 1
 
-        cond_H = np.linalg.cond(p.hessienne(Xk))
-        rows.append(lg.make_row(k, Xk, norme, X_star, (1.0, cond_H)))
+        cond_H = np.linalg.cond(p.hessienne(Xk))        # calculate the condition of H
+        rows.append(lg.make_row(k, Xk, norme, X_star, (1.0, cond_H)))   # update log
 
         if not np.isfinite(norme) or np.linalg.norm(Xk) > p.XMAX:    # the iterates diverged: stop
             break
