@@ -14,6 +14,7 @@ prj-math/
 ├── method4.py
 ├── input.py
 ├── input.txt
+├── log.py
 ├── problem.py
 └── README.md
 ```
@@ -58,3 +59,7 @@ Selon l'installation, la commande peut être `python3` à la place de `python`.
 ## Fichier d'entrée
 
 Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` et remplacez les valeurs. Si une donnée est manquante ou invalide, le programme s'arrête et affiche un message d'erreur.
+
+## Fichier de sortie
+
+Quand on lance un fichier `methodN.py`, le module `log.py` enregistre toutes les itérations dans un fichier CSV `resultat_methodN.csv` pour facilier la création des graphiques.
