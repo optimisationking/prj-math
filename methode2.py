@@ -1,4 +1,4 @@
-import problem as p
+import probleme as p
 import numpy as np
 import input as inp
 import log as lg

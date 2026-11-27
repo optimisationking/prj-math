@@ -1,0 +1,129 @@
+import probleme as p
+import numpy as np
+import input as inp
+import log as lg
+import time
+
+# Méthode 4 : Méthode de quasi-Newton BFGS (SQP-BFGS)
+#
+# Apply Newton, but H_k is replaced by a matrix B_k that approximates H_k
+# B_k is updated by BFGS formula
+#
+
+LOG_FILE = "resultat_methode4.csv"
+LOG_COLUMNS = ("alpha", "abs_c") 
+
+C_ARMIJO = 0.1          # constant of the Armijo condition
+ALPHA_MIN = 1e-12       # smallest step accepted by the line search
+YS_MIN = 1e-12          # below this value, BFGS update is skipped
+
+def bfgs_direction(Xk, gradk, Bk):
+    # solve quasi-Newton system Mk dk = -grad L(Xk)
+
+    grad_c = p.constraint_gradient(Xk)
+    Hk = np.zeros((3, 3))
+    Hk[:2, :2] = Bk 
+    Hk[:2, 2] = -grad_c 
+    Hk[2, :2] = -grad_c 
+    return np.linalg.solve(Hk, -gradk)
+
+def merit(X, rho):
+    # merit function phi = f + rho * |c|
+
+    r, h, _ = X
+    if r <= 0 or h <= 0:
+        return np.inf 
+    f = p.lagrangien([r, h, 0.0])
+    c = -p.gradient(X)[2]
+    return f + rho * abs(c)
+
+def armijo_step(Xk, gradk, dk, rho):
+    # armijo backtracking on the merit function
+    # returns the step
+
+    lam = Xk[2]
+    c = -gradk[2]
+    rho = max(rho, abs(lam + dk[2]) + 1.0)
+
+    grad_f = gradk[:2] + lam * p.constraint_gradient(Xk)
+    slope = np.dot(grad_f, dk[:2]) - rho * abs(c)
+    alpha = 1.0
+    phik = merit(Xk, rho)
+    while merit(Xk + alpha * dk, rho) > phik + C_ARMIJO * alpha * slope and alpha > ALPHA_MIN:
+        alpha /= 2.0
+
+    return alpha
+
+def bfgs_update(Bk, Xk, Xnew):
+    # update Bk with the BFGS formula
+
+    s = Xnew[:2] - Xk[:2]
+    X_mixed = np.array([Xk[0], Xk[1], Xnew[2]])
+    y = p.gradient(Xnew)[:2] - p.gradient(X_mixed)[:2]
+
+    if np.dot(y, s) <= YS_MIN:
+        return Bk 
+
+    Bs = np.dot(Bk, s)
+    return Bk - np.outer(Bs, Bs) / np.dot(s, Bs) + np.outer(y, y) / np.dot(y, s)
+
+def update_X(Xk, ak, dk):
+    Xnew = Xk + ak * dk
+    return Xnew
+
+def methode4(X0):
+    X_star = p.exact_solution()
+    Xk = np.array(X0, dtype=float)
+    gradk = p.gradient(Xk)
+    norm = np.linalg.norm(gradk)
+    Bk = np.eye(2)      # B_0 = I_2
+    rho = 1.0 
+    k = 0
+    rows = [lg.make_row(k, Xk, norm, X_star, (np.nan, abs(gradk[2])))] 
+
+    while norm > p.EPS and k < p.KMAX:
+        dk = bfgs_direction(Xk, gradk, Bk)
+        ak = armijo_step(Xk, gradk, dk, rho)   # update step on the merit function
+        Xnew = update_X(Xk, ak, dk)     
+        Bk = bfgs_update(Bk, Xk, Xnew)      # update Bk
+        Xk = Xnew       # update Xk
+        gradk = p.gradient(Xk)
+        norm = np.linalg.norm(gradk)
+        k += 1
+
+        rows.append(lg.make_row(k, Xk, norm, X_star, (ak, abs(gradk[2]))))  # update log
+
+        if not np.isfinite(norm) or np.linalg.norm(Xk) > p.XMAX:      # the iterates diverged: stop
+            break
+
+    return Xk, k, rows
+
+
+if __name__ == "__main__":
+    X0, _ = inp.read_input()
+    X_etoile = p.exact_solution()
+
+    print("Méthode 4 : Méthode de quasi-Newton BFGS")
+    print()
+
+    print("Données")
+    print("V0   :", p.V0)
+    print("X0   :", X0)
+    print("eps  :", p.EPS)
+    print("KMAX :", p.KMAX)
+    print()
+
+    debut = time.perf_counter()
+    Xk, k, rows = methode4(X0)
+    fin = time.perf_counter()
+    duree = fin - debut
+
+    lg.write_log(LOG_FILE, rows, LOG_COLUMNS)
+
+    print("Résultats")
+    print("Solution BFGS        :", Xk)
+    print("Solution exacte      :", X_etoile)
+    print("Itérations           :", k)
+    print("||grad L||           :", np.linalg.norm(p.gradient(Xk)))
+    print("Erreur               :", np.linalg.norm(Xk - X_etoile))
+    print(f"Durée d'exécution    : {duree:.6f} secondes")

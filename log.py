@@ -1,6 +1,6 @@
 import csv
 import numpy as np
-import problem as p
+import probleme as p
 
 # columns written for every method
 HEADER = ["k", "r", "h", "lambda", "L", "grad_norm", "error"]

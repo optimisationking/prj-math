@@ -1,11 +1,11 @@
 import time
 import numpy as np
-import problem as p
+import probleme as p
 import input as inp
-from method1 import methode1
-from method2 import methode2
-from method3 import methode3
-from method4 import methode4
+from methode1 import methode1
+from methode2 import methode2
+from methode3 import methode3
+from methode4 import methode4
 
 np.seterr(over="ignore", invalid="ignore") 
 
