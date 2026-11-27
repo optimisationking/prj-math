@@ -101,7 +101,7 @@ def methode4(X0):
 
 if __name__ == "__main__":
     X0, _ = inp.read_input()
-    X_etoile = p.exact_solution()
+    X_star = p.exact_solution()
 
     print("Méthode 4 : Méthode de quasi-Newton BFGS")
     print()
@@ -122,8 +122,8 @@ if __name__ == "__main__":
 
     print("Résultats")
     print("Solution BFGS        :", Xk)
-    print("Solution exacte      :", X_etoile)
+    print("Solution exacte      :", X_star)
     print("Itérations           :", k)
     print("||grad L||           :", np.linalg.norm(p.gradient(Xk)))
-    print("Erreur               :", np.linalg.norm(Xk - X_etoile))
+    print("Erreur               :", np.linalg.norm(Xk - X_star))
     print(f"Durée d'exécution    : {duree:.6f} secondes")
