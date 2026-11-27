@@ -6,7 +6,10 @@ import time
 
 # Méthode 4 : Méthode de quasi-Newton BFGS (SQP-BFGS)
 #
-# Apply Newton, but H_k is replaced by a matrix B_k that approximates H_k
+# Apply Newton, but H_k is replaced by a matrix M_k 
+#   with the Hessian of L with respect to (r, h) replaced by B_k
+# M_k is thus an approximation of H_k.
+#
 # B_k is updated by BFGS formula
 #
 
