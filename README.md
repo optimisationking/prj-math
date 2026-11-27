@@ -24,7 +24,7 @@ prj-math/
 | Fichier | Description |
 |---|---|
 | `main.py` | Lance les quatre méthodes depuis le même `X0` et affiche un tableau de comparaison |
-| `method1.py`, `method2.py`, `method3.py`, `method4.py` | Lancent chacun une méthode (gradient à pas fixe, gradient à pas optimal, Newton, quasi-Newton BFGS) et affichent les données et les résultats. |
+| `method1.py`, `method2.py`, `method3.py`, `method4.py` | Lancent chacun une méthode (gradient à pas fixe, gradient à pas optimal, Newton, quasi-Newton BFGS) et affichent les données et les résultats finaux. |
 | `input.py` | Affiche `X0` et `alpha` lus dans `input.txt` |
 
 ## Dépendances
@@ -62,4 +62,4 @@ Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` e
 
 ## Fichier de sortie
 
-Quand on lance un fichier `methodN.py`, le module `log.py` enregistre toutes les itérations dans un fichier CSV `resultat_methodN.csv` pour facilier la création des graphiques.
+Quand on lance un fichier `methodN.py`, avec `N` le nombre de méthode, le module `log.py` enregistre toutes les itérations dans un fichier CSV `resultat_methodN.csv` pour facilier la création des graphiques.
