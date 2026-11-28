@@ -62,4 +62,4 @@ Pour modifier les paramètres (`X0` et `alpha`), ouvrez le fichier `input.txt` e
 
 ## Fichier de sortie
 
-Quand on lance un fichier `methodeN.py`, avec `N` le nombre de méthode, le module `log.py` enregistre toutes les itérations dans un fichier CSV `resultat_methodeN.csv` pour facilier la création des graphiques.
+Quand on lance un fichier `methodeN.py`, avec `N` le numéro de méthode, le module `log.py` enregistre toutes les itérations dans un fichier CSV `resultat_methodeN.csv` pour facilier la création des graphiques.
